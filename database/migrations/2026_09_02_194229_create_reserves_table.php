@@ -13,6 +13,19 @@ return new class extends Migration
     {
         Schema::create('reserves', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade');
+
+            $table->foreignId('room_id')
+                ->constrained()
+                ->default()
+                ->onDelete('cascade');
+
+            $table->timestamp('start_time');
+            $table->timestamp('end_time');
+            $table->string('reason')->nullable();
+            $table->enum('status', ['pending', 'approved', 'rejected', 'cancelated'])->default('pending');
             $table->timestamps();
         });
     }

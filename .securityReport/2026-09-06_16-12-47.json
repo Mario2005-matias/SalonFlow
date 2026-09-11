@@ -1,0 +1,91 @@
+{
+  "scannedCount": 96,
+  "skippedCount": 0,
+  "findings": [
+    {
+      "rule": {
+        "id": "GEN-HTTP-URL",
+        "category": "Insecure Communication",
+        "title": "Hardcoded HTTP URL (non-HTTPS)",
+        "description": "HTTP URLs transmit data in plain text. Use HTTPS for all external communication.",
+        "severity": "warning",
+        "languages": [],
+        "fixDescription": "Replace 'http://' with 'https://' for all production URLs.",
+        "reference": "https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/09-Testing_for_Weak_Cryptography/03-Testing_for_Sensitive_Information_Sent_via_Unencrypted_Channels"
+      },
+      "line": 70,
+      "startChar": 46,
+      "endChar": 54,
+      "matchedText": "\"http://",
+      "filePath": "c:\\laragon\\www\\SalonFlow\\resources\\views\\welcome.blade.php"
+    },
+    {
+      "rule": {
+        "id": "GEN-HTTP-URL",
+        "category": "Insecure Communication",
+        "title": "Hardcoded HTTP URL (non-HTTPS)",
+        "description": "HTTP URLs transmit data in plain text. Use HTTPS for all external communication.",
+        "severity": "warning",
+        "languages": [],
+        "fixDescription": "Replace 'http://' with 'https://' for all production URLs.",
+        "reference": "https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/09-Testing_for_Weak_Cryptography/03-Testing_for_Sensitive_Information_Sent_via_Unencrypted_Channels"
+      },
+      "line": 97,
+      "startChar": 46,
+      "endChar": 54,
+      "matchedText": "\"http://",
+      "filePath": "c:\\laragon\\www\\SalonFlow\\resources\\views\\welcome.blade.php"
+    },
+    {
+      "rule": {
+        "id": "GEN-HTTP-URL",
+        "category": "Insecure Communication",
+        "title": "Hardcoded HTTP URL (non-HTTPS)",
+        "description": "HTTP URLs transmit data in plain text. Use HTTPS for all external communication.",
+        "severity": "warning",
+        "languages": [],
+        "fixDescription": "Replace 'http://' with 'https://' for all production URLs.",
+        "reference": "https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/09-Testing_for_Weak_Cryptography/03-Testing_for_Sensitive_Information_Sent_via_Unencrypted_Channels"
+      },
+      "line": 127,
+      "startChar": 38,
+      "endChar": 46,
+      "matchedText": "\"http://",
+      "filePath": "c:\\laragon\\www\\SalonFlow\\resources\\views\\welcome.blade.php"
+    },
+    {
+      "rule": {
+        "id": "GEN-HTTP-URL",
+        "category": "Insecure Communication",
+        "title": "Hardcoded HTTP URL (non-HTTPS)",
+        "description": "HTTP URLs transmit data in plain text. Use HTTPS for all external communication.",
+        "severity": "warning",
+        "languages": [],
+        "fixDescription": "Replace 'http://' with 'https://' for all production URLs.",
+        "reference": "https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/09-Testing_for_Weak_Cryptography/03-Testing_for_Sensitive_Information_Sent_via_Unencrypted_Channels"
+      },
+      "line": 141,
+      "startChar": 234,
+      "endChar": 242,
+      "matchedText": "\"http://",
+      "filePath": "c:\\laragon\\www\\SalonFlow\\resources\\views\\welcome.blade.php"
+    },
+    {
+      "rule": {
+        "id": "GEN-HTTP-URL",
+        "category": "Insecure Communication",
+        "title": "Hardcoded HTTP URL (non-HTTPS)",
+        "description": "HTTP URLs transmit data in plain text. Use HTTPS for all external communication.",
+        "severity": "warning",
+        "languages": [],
+        "fixDescription": "Replace 'http://' with 'https://' for all production URLs.",
+        "reference": "https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/09-Testing_for_Weak_Cryptography/03-Testing_for_Sensitive_Information_Sent_via_Unencrypted_Channels"
+      },
+      "line": 152,
+      "startChar": 185,
+      "endChar": 193,
+      "matchedText": "\"http://",
+      "filePath": "c:\\laragon\\www\\SalonFlow\\resources\\views\\welcome.blade.php"
+    }
+  ]
+}

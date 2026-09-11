@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('throttle:6,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::post('/logout-all', [AuthController::class, 'logoutAll'])->name('logout-all');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout-all', [AuthController::class, 'logoutAll'])->name('logout-all');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/perfil', [AuthController::class, 'me'])->name('me');
     Route::get('/rooms', [RoomController::class, 'index'])->name('room.index');
     Route::post('/room', [RoomController::class, 'store'])->name('room.create');

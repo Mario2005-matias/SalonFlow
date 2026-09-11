@@ -10,6 +10,7 @@ class Reserve extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'room_id',
         'start_time',
         'end_time',

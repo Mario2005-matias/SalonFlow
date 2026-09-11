@@ -14,9 +14,9 @@ class ReserveController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $reservations = Reserve::all();
+        $reservations = Reserve::where('user_id', $request->user()->id)->get();
         return response()->json([
             'message' => 'Reservas encontradas',
             'data' => ReserveResource::collection($reservations)
@@ -43,7 +43,10 @@ class ReserveController extends Controller
             ], 400);
         }
 
-        $reservation = Reserve::create($request->validated());
+        $reservation = Reserve::create([
+            ...$request->validated(),
+            'user_id' => $request->user()->id,
+        ]);
 
         return response()->json([
             'message' => 'Reserva criada com sucesso',

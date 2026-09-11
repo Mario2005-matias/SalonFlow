@@ -18,6 +18,7 @@ class ReserveFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => fake()->numberBetween(1, 3),
             'room_id' => fake()->numberBetween(1, 3),
             'start_time' => fake()->dateTimeBetween('-1 week', '+1 week'),
             'end_time' => fake()->dateTimeBetween('+1 week', '+2 weeks'),

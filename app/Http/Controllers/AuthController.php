@@ -40,7 +40,7 @@ class AuthController extends Controller
        $key = Str::lower($validated['email']).'|'.$request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
-            $seconds = RateLimiter::availableIn($key);
+            //$seconds = RateLimiter::availableIn($key);
             return response()->json(['message' => 'Muitas tentativas de login. Por favor, tente novamente mais tarde.'], 429);
         }
 

@@ -37,7 +37,7 @@ class AuthController extends Controller
     {
         $validated = $request->validated();
 
-       $key = Str::lower($validated['email']).'|'.$request->ip();
+        $key = Str::lower($validated['email']) . '|' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
             //$seconds = RateLimiter::availableIn($key);

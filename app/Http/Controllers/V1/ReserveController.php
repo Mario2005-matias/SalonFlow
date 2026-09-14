@@ -59,6 +59,8 @@ class ReserveController extends Controller
      */
     public function show(Reserve $reserve)
     {
+        $this->authorize('view', $reserve);
+
         return response()->json([
             'message' => 'Reserva encontrada',
             'data' => new ReserveResource($reserve)
@@ -86,9 +88,6 @@ class ReserveController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //

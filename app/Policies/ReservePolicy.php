@@ -6,7 +6,7 @@ use App\Models\Reserve;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class ReservaPolicy
+class ReservePolicy
 {
     /**
      * Determine whether the user can view any models.

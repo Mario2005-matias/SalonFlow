@@ -76,7 +76,7 @@ class ReserveController extends Controller
             return response()->json(['message' => 'Esta reserva já está cancelada'], 409);
         }
 
-        if($reserve->end_time >= now()) {
+        if($reserve->end_time < now()) {
             return response()->json(['message' => 'Não é possível cancelar uma reserva que já passou'], 400);
         }
 

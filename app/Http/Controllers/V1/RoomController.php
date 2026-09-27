@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Concerns\ApiResponses;
 use App\Http\Requests\FilterRoomsRequest;
-use App\Http\Requests\RoomDisableRequest;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\RoomRequest;
 use App\Http\Resources\RoomResource;
 use App\Models\Room;
@@ -13,72 +13,77 @@ use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use ApiResponses;
+    
+    public function __construct(private RoomService $roomService) {}
+
     public function index()
     {
-        $rooms = Room::with('category_id')->get();
-        return response()->json([
-            'message' => 'Salas encontradas',
-            'data' => RoomResource::collection($rooms)
-        ]);
+        $this->authorize('viewAny', Room::class);
+
+        return $this->success(
+            'Salas encontradas',
+            RoomResource::collection($this->roomService->listAll())
+        );
     }
 
-    public function indexClient(FilterRoomsRequest $request, RoomService $roomService)
+    public function indexClient(FilterRoomsRequest $request)
     {
-        $rooms = $roomService->listFiltered($request->validated());
-        return RoomResource::collection($rooms);
+        return RoomResource::collection(
+            $this->roomService->listFiltered($request->validated())
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(RoomRequest $request)
     {
-        $room = Room::create($request->validated());
+        $this->authorize('create', Room::class);
 
-        return response()->json([
-            'message' => 'Sala criada com sucesso',
-            'data' => new RoomResource($room)
-        ], 201);
+        $room = $this->roomService->create($request->validated());
+
+        return $this->success(
+            'Sala criada com sucesso',
+            new RoomResource($room),
+            201
+        );
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Room $room)
     {
-        return response()->json([
-            'message' => 'Sala encontrada',
-            'data' => new RoomResource($room)
-        ]);
+        $room->load('category');
+
+        return $this->success(
+            'Sala encontrada',
+            new RoomResource($room)
+        );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(RoomRequest $request, Room $room)
     {
-        $room->update($request->validated());
-        return response()->json([
-            'message' => 'Sala atualizada com sucesso',
-            'data' => new RoomResource($room)
-        ]);
+        $this->authorize('update', $room);
+
+        $room = $this->roomService->update($room, $request->validated());
+
+        return $this->success(
+            'Sala atualizada com sucesso',
+            new RoomResource($room)
+        );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function disable(Room $room): Room
+    public function disable(Room $room)
     {
-        $room->update(['is_available' => false]);
-        return $room;
+        $this->authorize('update', $room);
+
+        $this->roomService->disable($room);
+
+        return $this->success('Sala desabilitada com sucesso');
     }
 
-    public function enable(Room $room): Room
+    public function enable(Room $room)
     {
-        $room->update(['is_available' => true]);
-        return $room;
+        $this->authorize('update', $room);
+
+        $this->roomService->enable($room);
+
+        return $this->success('Sala habilitada com sucesso');
     }
 }

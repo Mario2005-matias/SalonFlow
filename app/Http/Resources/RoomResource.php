@@ -20,11 +20,11 @@ class RoomResource extends JsonResource
             'description' => $this->description,
             'capacity' => $this->capacity,
             'location' => $this->location,
-            'category' => [
+            'category' => $this->category ? [
                 'id' => $this->category->id,
                 'name' => $this->category->name,
                 'slug' => $this->category->slug,
-            ]
+            ] : "Sem categoria",
         ];
     }
 }

@@ -16,7 +16,8 @@ class ReserveController extends Controller
      */
     public function index(Request $request)
     {
-        $reservations = Reserve::where('user_id', $request->user()->id)->get();
+        //$reservations = Reserve::where('user_id', $request->user()->id)->get();
+        $reservations = Reserve::paginate(20);
         return response()->json([
             'message' => 'Reservas encontradas',
             'data' => ReserveResource::collection($reservations)
@@ -59,7 +60,7 @@ class ReserveController extends Controller
      */
     public function show(Reserve $reserve)
     {
-        $this->authorize('view', $reserve);
+        //$this->authorize('view', $reserve);
 
         return response()->json([
             'message' => 'Reserva encontrada',

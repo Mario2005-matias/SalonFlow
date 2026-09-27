@@ -22,4 +22,9 @@ class Room extends Model
     {
         return $this->hasMany(Reserve::class);
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

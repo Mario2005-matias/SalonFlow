@@ -12,7 +12,7 @@ class RoomUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return  true;
+        return $this->user()->can('update', $this->route('room'));
     }
 
     /**
@@ -23,7 +23,11 @@ class RoomUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name'        => ['sometimes', 'required', 'string', 'max:150'],
+            'capacity'    => ['sometimes', 'required', 'integer', 'min:1'],
+            'price'       => ['sometimes', 'required', 'numeric', 'min:0'],
+            'category_id' => ['sometimes', 'required', 'integer', 'exists:categories,id'],
+            'is_active'   => ['sometimes', 'boolean'],
         ];
     }
 }

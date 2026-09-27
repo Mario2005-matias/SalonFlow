@@ -18,7 +18,7 @@ class RoomController extends Controller
      */
     public function index()
     {
-        $rooms = Room::paginate(20);
+        $rooms = Room::with('category_id')->get();
         return response()->json([
             'message' => 'Salas encontradas',
             'data' => RoomResource::collection($rooms)
@@ -70,25 +70,15 @@ class RoomController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function disable(RoomDisableRequest $request, Room $room)
+    public function disable(Room $room): Room
     {
-        if (!$room->is_available) {
-            return response()->json(['message' => 'Esta sala já está desabilitada'], 409);
-        }
-
-        $room->update($request->validated());
-
-        return response()->json(['message' => 'Sala desabilitada com sucesso']);
+        $room->update(['is_available' => false]);
+        return $room;
     }
 
-    public function enable(RoomDisableRequest $request, Room $room)
+    public function enable(Room $room): Room
     {
-        if ($room->is_available) {
-            return response()->json(['message' => 'Esta sala já está habilitada'], 409);
-        }
-
-        $room->update($request->validated());
-
-        return response()->json(['message' => 'Sala habilitada com sucesso'], 200);
+        $room->update(['is_available' => true]);
+        return $room;
     }
 }

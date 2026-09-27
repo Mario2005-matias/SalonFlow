@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Room;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,7 @@ class RoomRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('create', Room::class);
     }
 
     /**
@@ -27,7 +28,8 @@ class RoomRequest extends FormRequest
             'description' => 'required|string',
             'capacity' => 'required|numeric',
             'location' => 'required|string',
-            'is_available' => 'boolean'
-        ];
+            'is_available' => 'boolean',
+            'category_id' => 'required|integer|exists:categories,id'
+        ];  
     }
 }

@@ -4,15 +4,16 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class FilterRoomsRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('update', $this->route('category'));
     }
 
     /**
@@ -23,11 +24,10 @@ class FilterRoomsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category'    => ['sometimes', 'string', 'exists:categories,slug'],
-            'capacity_min'=> ['sometimes', 'integer', 'min:1'],
-            'price_min'   => ['sometimes', 'numeric', 'min:0'],
-            'price_max'   => ['sometimes', 'numeric', 'gte:price_min'],
-            'per_page'    => ['sometimes', 'integer', 'min:1', 'max:50'],
+            'name' => [
+                'required', 'string', 'max:100',
+                Rule::unique('categories', 'name')->ignore($this->route('category'))
+            ]
         ];
     }
 }

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterRoomsRequest;
 use App\Http\Requests\RoomDisableRequest;
 use App\Http\Requests\RoomRequest;
 use App\Http\Resources\RoomResource;
 use App\Models\Room;
+use App\Service\RoomService;
 use Illuminate\Http\Request;
 
 class RoomController extends Controller
@@ -21,6 +23,12 @@ class RoomController extends Controller
             'message' => 'Salas encontradas',
             'data' => RoomResource::collection($rooms)
         ]);
+    }
+
+    public function indexClient(FilterRoomsRequest $request, RoomService $roomService)
+    {
+        $rooms = $roomService->listFiltered($request->validated());
+        return RoomResource::collection($rooms);
     }
 
     /**
@@ -64,7 +72,7 @@ class RoomController extends Controller
      */
     public function disable(RoomDisableRequest $request, Room $room)
     {
-        if(!$room->is_available) {
+        if (!$room->is_available) {
             return response()->json(['message' => 'Esta sala já está desabilitada'], 409);
         }
 
@@ -75,7 +83,7 @@ class RoomController extends Controller
 
     public function enable(RoomDisableRequest $request, Room $room)
     {
-        if($room->is_available) {
+        if ($room->is_available) {
             return response()->json(['message' => 'Esta sala já está habilitada'], 409);
         }
 

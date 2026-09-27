@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\V1\CategoryController;
 use App\Http\Controllers\V1\ReserveController;
 use App\Http\Controllers\V1\RoomController;
 use Illuminate\Support\Facades\Route;
@@ -9,7 +10,7 @@ Route::middleware('throttle:6,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-    Route::get('/rooms', [RoomController::class, 'index'])->name('room.index');
+    Route::get('/rooms', [RoomController::class, 'indexClient'])->name('room.index');
     Route::get('/rooms/{room}', [RoomController::class, 'show'])->name('room.show');
 
     Route::get('/reserves', [ReserveController::class, 'index'])->name('reserve.index');
@@ -34,4 +35,9 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('/reserves/{reserve}', [ReserveController::class, 'show'])->name('reserve.show');
     Route::post('/reserves', [ReserveController::class, 'store'])->name('reserve.create');
     Route::put('/reserves/{reserve}/cancelation', [ReserveController::class, 'cancelation'])->name('reserve.update');
+
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::post('/categories', [CategoryController::class, 'store']);
+    Route::put('/categories/{category}', [CategoryController::class, 'update']);
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 });

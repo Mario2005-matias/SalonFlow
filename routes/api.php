@@ -6,38 +6,68 @@ use App\Http\Controllers\V1\ReserveController;
 use App\Http\Controllers\V1\RoomController;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Rotas públicas (visitantes)
+|--------------------------------------------------------------------------
+| Rate limit apertado: 6 pedidos por minuto por IP.
+| Previne brute-force no login e spam no registo.
+*/
 Route::middleware('throttle:6,1')->group(function () {
-    Route::post('/register', [AuthController::class, 'register'])->name('register');
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+    Route::post('/login',    [AuthController::class, 'login'])->name('auth.login');
 
-    Route::get('/rooms', [RoomController::class, 'indexClient'])->name('room.index');
-    Route::get('/rooms/{room}', [RoomController::class, 'show'])->name('room.show');
-
-    Route::get('/reserves', [ReserveController::class, 'index'])->name('reserve.index');
-    Route::post('/reserves', [ReserveController::class, 'store'])->name('reserve.create');
-    Route::get('/reserves/{reserve}', [ReserveController::class, 'show'])->name('reserve.show');
-    Route::put('/reserves/{reserve}/cancelation', [ReserveController::class, 'cancelation'])->name('reserve.update');
+    // Catálogo — leitura pública, visitante pode ver salas disponíveis
+    Route::get('/rooms',        [RoomController::class, 'indexClient'])->name('rooms.public.index');
+    Route::get('/rooms/{room}', [RoomController::class, 'show'])->name('rooms.public.show');
 });
 
-Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
-    Route::post('/logout-all', [AuthController::class, 'logoutAll'])->name('logout-all');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/perfil', [AuthController::class, 'me'])->name('me');
+/*
+|--------------------------------------------------------------------------
+| Rotas autenticadas (qualquer user com token)
+|--------------------------------------------------------------------------
+| Operações do próprio user — não faz sentido prefixar /admin
+| porque um user comum também faz logout, vê o próprio perfil, etc.
+*/
+Route::middleware('auth:sanctum')->group(function () {
+    // Auth / perfil
+    Route::post('/logout',     [AuthController::class, 'logout'])->name('auth.logout');
+    Route::post('/logout-all', [AuthController::class, 'logoutAll'])->name('auth.logout-all');
+    Route::get('/me',          [AuthController::class, 'me'])->name('auth.me');
 
-    Route::get('/rooms', [RoomController::class, 'index'])->name('room.index');
-    Route::post('/room', [RoomController::class, 'store'])->name('room.create');
-    Route::get('/rooms/{room}', [RoomController::class, 'show'])->name('room.show');
-    Route::put('/rooms/{room}', [RoomController::class, 'update'])->name('room.update');
-    Route::put('/rooms/{room}/disable', [RoomController::class, 'disable'])->name('room.disable');
-    Route::put('/rooms/{room}/enable', [RoomController::class, 'enable'])->name('room.enable');
-
-    Route::get('/reserves', [ReserveController::class, 'index'])->name('reserve.index');
-    Route::get('/reserves/{reserve}', [ReserveController::class, 'show'])->name('reserve.show');
-    Route::post('/reserves', [ReserveController::class, 'store'])->name('reserve.create');
-    Route::put('/reserves/{reserve}/cancelation', [ReserveController::class, 'cancelation'])->name('reserve.update');
-
-    Route::get('/categories', [CategoryController::class, 'index']);
-    Route::post('/categories', [CategoryController::class, 'store']);
-    Route::put('/categories/{category}', [CategoryController::class, 'update']);
-    Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+    // Reservas do próprio user
+    Route::get('/reserves',                          [ReserveController::class, 'index'])->name('reserves.index');
+    Route::post('/reserves',                         [ReserveController::class, 'store'])->name('reserves.store');
+    Route::get('/reserves/{reserve}',                [ReserveController::class, 'show'])->name('reserves.show');
+    Route::put('/reserves/{reserve}/cancelation',    [ReserveController::class, 'cancelation'])->name('reserves.cancel');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Rotas admin
+|--------------------------------------------------------------------------
+| Dupla proteção:
+|   1. auth:sanctum  → precisa de token válido
+|   2. admin         → precisa de role = 'admin'
+| Prefixo /admin para deixar claro na URL que é área restrita.
+*/
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+        // Gestão de salas
+        Route::get('/rooms',                 [RoomController::class, 'index'])->name('rooms.index');
+        Route::post('/rooms',                [RoomController::class, 'store'])->name('rooms.store');
+        Route::get('/rooms/{room}',          [RoomController::class, 'show'])->name('rooms.show');
+        Route::put('/rooms/{room}',          [RoomController::class, 'update'])->name('rooms.update');
+        Route::put('/rooms/{room}/disable',  [RoomController::class, 'disable'])->name('rooms.disable');
+        Route::put('/rooms/{room}/enable',   [RoomController::class, 'enable'])->name('rooms.enable');
+
+        // Reservas — admin vê/geral todas
+        Route::get('/reserves',                       [ReserveController::class, 'indexAdmin'])->name('reserves.index');
+        Route::get('/reserves/{reserve}',             [ReserveController::class, 'show'])->name('reserves.show');
+        Route::put('/reserves/{reserve}/cancelation', [ReserveController::class, 'cancelation'])->name('reserves.cancel');
+
+        // Categorias
+        Route::get('/categories',              [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories',             [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/{category}',   [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}',[CategoryController::class, 'destroy'])->name('categories.destroy');
+    });

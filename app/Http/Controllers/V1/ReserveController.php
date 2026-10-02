@@ -16,7 +16,6 @@ class ReserveController extends Controller
      */
     public function index(Request $request)
     {
-        dd($request->all());
         $reservations = Reserve::where('user_id', $request->user()->id)->get();
         //$reservations = Reserve::paginate(20);
         return response()->json([
@@ -25,9 +24,6 @@ class ReserveController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(ReserveStore $request)
     {
         if(Reserve::where('room_id', $request->room_id)
@@ -56,12 +52,9 @@ class ReserveController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Reserve $reserve)
     {
-        //$this->authorize('view', $reserve);
+        $this->authorize('view', $reserve);
 
         return response()->json([
             'message' => 'Reserva encontrada',

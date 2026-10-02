@@ -16,8 +16,9 @@ class ReserveController extends Controller
      */
     public function index(Request $request)
     {
-        //$reservations = Reserve::where('user_id', $request->user()->id)->get();
-        $reservations = Reserve::paginate(20);
+        dd($request->all());
+        $reservations = Reserve::where('user_id', $request->user()->id)->get();
+        //$reservations = Reserve::paginate(20);
         return response()->json([
             'message' => 'Reservas encontradas',
             'data' => ReserveResource::collection($reservations)

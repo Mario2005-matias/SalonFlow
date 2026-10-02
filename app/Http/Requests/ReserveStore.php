@@ -27,7 +27,7 @@ class ReserveStore extends FormRequest
             'start_time' => 'required|date|after:now',
             'end_time' => 'required|date|after:start_time',
             'reason' => 'nullable|string|max:255',
-            'status' => 'required|in:pending,approved,rejected,cancelated',
+            //'status' => 'required|in:pending,approved,rejected,cancelated',
         ];
     }
 }

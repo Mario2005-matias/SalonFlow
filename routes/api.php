@@ -40,10 +40,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reserves',                         [ReserveController::class, 'store'])->name('reserves.store');
     Route::get('/reserves/{reserve}',                [ReserveController::class, 'show'])->name('reserves.show');
     Route::put('/reserves/{reserve}/cancelation',    [ReserveController::class, 'cancelation'])->name('reserves.cancel');
-});
+    });
 
-/*
-|--------------------------------------------------------------------------
+    /*
+    |--------------------------------------------------------------------------
 | Rotas admin
 |--------------------------------------------------------------------------
 | Dupla proteção:
@@ -62,6 +62,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->name('admin.')->g
 
         // Reservas — admin vê/geral todas
         Route::get('/reserves',                       [ReserveController::class, 'indexAdmin'])->name('reserves.index');
+        Route::post('/reserves',                         [ReserveController::class, 'store'])->name('reserves.store');
         Route::get('/reserves/{reserve}',             [ReserveController::class, 'show'])->name('reserves.show');
         Route::put('/reserves/{reserve}/cancelation', [ReserveController::class, 'cancelation'])->name('reserves.cancel');
 

@@ -37,7 +37,7 @@ class ReservePolicy
      */
     public function update(User $user, Reserve $reserve): bool
     {
-        return $user->id === $reserve->user_id && $reserve->status === 'pending';
+        return $user->id === $reserve->user->id && $reserve->status === 'pending';
     }
 
     /**

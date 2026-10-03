@@ -21,8 +21,7 @@ class ReserveController extends Controller
         $reservations = Reserve::with('room')
             ->where('user_id', $request->user()->id)
             ->orderByDesc('start_time')
-            ->paginate(20)
-            ->get();
+            ->paginate(20);
 
         return $this->success(
             'Reservas encontradas',
@@ -68,6 +67,7 @@ class ReserveController extends Controller
 
     public function store(ReserveStore $request)
     {
+        dd($request->validated());
         $data = $request->validated();
 
         $reservation = DB::transaction(function () use ($request, $data) {

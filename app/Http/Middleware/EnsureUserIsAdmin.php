@@ -21,7 +21,7 @@ class EnsureUserIsAdmin
             return response()->json(['message' => 'Não autenticado.'], 401);
         }
 
-        if (! $user->role() === 'admin') {
+        if (! $user->isAdmin()) {
             return response()->json(['message' => 'Acesso negado.'], 403);
         }
 

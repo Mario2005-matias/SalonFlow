@@ -12,7 +12,7 @@ class ReserveCancelation extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('update', $this->route('reserve'));
     }
 
     /**
@@ -24,7 +24,7 @@ class ReserveCancelation extends FormRequest
     {
         return [
             'reason' => 'required|string|max:255',
-            'status' => 'required|in:pending,approved,rejected,cancelated',
+            'status' => 'required|string|in:cancelated',
         ];
     }
 }

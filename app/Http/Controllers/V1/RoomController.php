@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class RoomController extends Controller
 {
     use ApiResponses;
-    
+
     public function __construct(private RoomService $roomService) {}
 
     public function index()
@@ -29,50 +29,36 @@ class RoomController extends Controller
 
     public function indexClient(FilterRoomsRequest $request)
     {
-        return RoomResource::collection(
-            $this->roomService->listFiltered($request->validated())
+        return $this->success(
+            'Salas encontradas',
+            RoomResource::collection($this->roomService->listFiltered($request->validated()))
         );
     }
 
     public function store(RoomRequest $request)
     {
-        $this->authorize('create', Room::class);
-
         $room = $this->roomService->create($request->validated());
 
-        return $this->success(
-            'Sala criada com sucesso',
-            new RoomResource($room),
-            201
-        );
+        return $this->success('Sala criada com sucesso', new RoomResource($room), 201);
     }
 
     public function show(Room $room)
     {
         $room->load('category');
 
-        return $this->success(
-            'Sala encontrada',
-            new RoomResource($room)
-        );
+        return $this->success('Sala encontrada', new RoomResource($room));
     }
 
     public function update(RoomRequest $request, Room $room)
     {
-        $this->authorize('update', $room);
-
         $room = $this->roomService->update($room, $request->validated());
 
-        return $this->success(
-            'Sala atualizada com sucesso',
-            new RoomResource($room)
-        );
+        return $this->success('Sala atualizada com sucesso', new RoomResource($room));
     }
 
     public function disable(Room $room)
     {
         $this->authorize('update', $room);
-
         $this->roomService->disable($room);
 
         return $this->success('Sala desabilitada com sucesso');
@@ -81,7 +67,6 @@ class RoomController extends Controller
     public function enable(Room $room)
     {
         $this->authorize('update', $room);
-
         $this->roomService->enable($room);
 
         return $this->success('Sala habilitada com sucesso');

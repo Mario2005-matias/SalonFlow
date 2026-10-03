@@ -15,12 +15,14 @@ class ReserveResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'user_id' => $this->user_id,
-            'room_id' => $this->room_id,
+             'id'         => $this->id,
+            'user_id'    => $this->user_id,
+            'room_id'    => $this->room_id,
             'start_time' => $this->start_time,
-            'end_time' => $this->end_time,
-            'status' => $this->status
+            'end_time'   => $this->end_time,
+            'status'     => $this->status,
+            'room'       => new RoomResource($this->whenLoaded('room')),
+            'user'       => new UserResource($this->whenLoaded('user')),
         ];
     }
 }

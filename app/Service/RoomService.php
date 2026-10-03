@@ -19,23 +19,11 @@ class RoomService
             ->where('is_available', true)
             ->when(
                 $filters['category'] ?? null,
-                fn($q, $slug) =>
-                $q->whereHas('category', fn($q) => $q->where('slug', $slug))
+                fn($q, $slug) => $q->whereHas('category', fn($q) => $q->where('slug', $slug))
             )
             ->when(
                 $filters['capacity_min'] ?? null,
-                fn($q, $val) =>
-                $q->where('capacity', '>=', $val)
-            )
-            ->when(
-                $filters['price_min'] ?? null,
-                fn($q, $val) =>
-                $q->where('price', '>=', $val)
-            )
-            ->when(
-                $filters['price_max'] ?? null,
-                fn($q, $val) =>
-                $q->where('price', '<=', $val)
+                fn($q, $val) => $q->where('capacity', '>=', $val)
             )
             ->paginate($filters['per_page'] ?? 12);
     }

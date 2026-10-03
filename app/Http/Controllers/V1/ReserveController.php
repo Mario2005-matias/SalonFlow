@@ -7,59 +7,102 @@ use App\Http\Resources\ReserveResource;
 use App\Models\Reserve;
 use App\Http\Requests\ReserveStore;
 use App\Http\Requests\ReserveCancelation;
+use App\Http\Controllers\Concerns\ApiResponses;
+use App\Http\Requests\FilterReservesRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReserveController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use ApiResponses;
+
     public function index(Request $request)
     {
-        $reservations = Reserve::where('user_id', $request->user()->id)->get();
-        //$reservations = Reserve::paginate(20);
-        return response()->json([
-            'message' => 'Reservas encontradas',
-            'data' => ReserveResource::collection($reservations)
-        ]);
+        $reservations = Reserve::with('room')
+            ->where('user_id', $request->user()->id)
+            ->orderByDesc('start_time')
+            ->paginate(20)
+            ->get();
+
+        return $this->success(
+            'Reservas encontradas',
+            ReserveResource::collection($reservations)
+        );
     }
+
+    public function indexAdmin(FilterReservesRequest $request)
+    {
+        $filters = $request->validated();
+
+        $reservations = Reserve::query()
+            ->with(['room', 'user'])
+            ->when(
+                $filters['status'] ?? null,
+                fn($q, $status) => $q->where('status', $status)
+            )
+            ->when(
+                $filters['room_id'] ?? null,
+                fn($q, $roomId) => $q->where('room_id', $roomId)
+            )
+            ->when(
+                $filters['user_id'] ?? null,
+                fn($q, $userId) => $q->where('user_id', $userId)
+            )
+            ->when(
+                $filters['date_from'] ?? null,
+                fn($q, $from) => $q->where('end_time', '>=', $from)
+            )
+            ->when(
+                $filters['date_to'] ?? null,
+                fn($q, $to) => $q->where('start_time', '<=', $to)
+            )
+            ->orderByDesc('start_time')
+            ->paginate($filters['per_page'] ?? 20);
+
+        return $this->success(
+            'Reservas encontradas',
+            ReserveResource::collection($reservations)
+        );
+    }
+
 
     public function store(ReserveStore $request)
     {
-        if(Reserve::where('room_id', $request->room_id)
-            ->where('status', 'approved')
-            ->where(function ($query) use ($request) {
-                $query->whereBetween('start_time', [$request->start_time, $request->end_time])
-                    ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
-                    ->orWhere(function ($query) use ($request) {
-                        $query->where('start_time', '<=', $request->start_time)
-                            ->where('end_time', '>=', $request->end_time);
-                    });
-            })->exists()) {
-            return response()->json([
-                'message' => 'A sala já está reservada nesse período',
-            ], 400);
-        }
+        $data = $request->validated();
 
-        $reservation = Reserve::create([
-            ...$request->validated(),
-            'user_id' => $request->user()->id,
-        ]);
+        $reservation = DB::transaction(function () use ($request, $data) {
+            $conflict = Reserve::where('room_id', $data['room_id'])
+                ->where('status', 'approved')
+                ->where('start_time', '<', $data['end_time'])
+                ->where('end_time', '>', $data['start_time'])
+                ->lockForUpdate()
+                ->exists();
 
-        return response()->json([
-            'message' => 'Reserva criada com sucesso',
-            'data' => new ReserveResource($reservation)
-        ], 201);
+            if ($conflict) {
+                abort(409, 'A sala já está reservada nesse período.');
+            }
+
+            return Reserve::create([
+                ...$data,
+                'user_id' => $request->user()->id,
+            ]);
+        });
+
+        return $this->success(
+            'Reserva criada com sucesso',
+            new ReserveResource($reservation),
+            201
+        );
     }
 
     public function show(Reserve $reserve)
     {
         $this->authorize('view', $reserve);
 
-        return response()->json([
-            'message' => 'Reserva encontrada',
-            'data' => new ReserveResource($reserve)
-        ]);
+        return $this->success(
+            'Reserva encontrada',
+            new ReserveResource($reserve->load('room', 'user'))
+        );
     }
 
     /**
@@ -67,20 +110,22 @@ class ReserveController extends Controller
      */
     public function cancelation(ReserveCancelation $request, Reserve $reserve)
     {
-        if($reserve->status === 'cancelated') {
-            return response()->json(['message' => 'Esta reserva já está cancelada'], 409);
+        $this->authorize('update', $reserve);
+
+        if ($reserve->status === 'cancelated') {
+            return $this->error('Esta reserva já está cancelada.', 409);
         }
 
-        if($reserve->end_time < now()) {
-            return response()->json(['message' => 'Não é possível cancelar uma reserva que já passou'], 400);
+        if ($reserve->end_time < now()) {
+            return $this->error('Não é possível cancelar uma reserva que já passou.', 400);
         }
 
         $reserve->update($request->validated());
 
-        return response()->json([
-            'message' => 'Reserva atualizada com sucesso',
-            'data' => new ReserveResource($reserve)
-        ]);
+        return $this->success(
+            'Reserva cancelada com sucesso',
+            new ReserveResource($reserve->fresh())
+        );
     }
 
     public function destroy(string $id)

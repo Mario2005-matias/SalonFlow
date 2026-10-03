@@ -26,10 +26,10 @@ class RoomRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'capacity' => 'required|numeric',
-            'location' => 'required|string',
+            'capacity' => 'required|numeric|min:1',
+            'location' => 'required|string|max:255',
             'is_available' => 'boolean',
             'category_id' => 'required|integer|exists:categories,id'
-        ];  
+        ];
     }
 }

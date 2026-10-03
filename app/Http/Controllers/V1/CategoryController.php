@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Http\Controllers\Concerns\ApiResponses;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
@@ -12,25 +13,30 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    use ApiResponses;
+
     public function __construct(private CategoryService $categoryService) {}
 
     public function index()
     {
-        return CategoryResource::collection(Category::all());
+        return $this->success(
+            'Categorias encontradas',
+            CategoryResource::collection(Category::all())
+        );
     }
 
     public function store(StoreCategoryRequest $request)
     {
         $category = $this->categoryService->create($request->validated());
 
-        return new CategoryResource($category);
+        return $this->success('Categoria criada com sucesso', new CategoryResource($category), 201);
     }
 
     public function update(UpdateCategoryRequest $request, Category $category)
     {
         $category = $this->categoryService->update($category, $request->validated());
 
-        return new CategoryResource($category);
+        return $this->success('Categoria atualizada com sucesso', new CategoryResource($category));
     }
 
     public function destroy(Category $category)
@@ -38,8 +44,6 @@ class CategoryController extends Controller
         $this->authorize('delete', $category);
         $this->categoryService->delete($category);
 
-        return response()->json([
-            'message'=> 'Categoria eliminada com sucesso'
-        ], 200);
+        return $this->success('Categoria eliminada com sucesso');
     }
 }

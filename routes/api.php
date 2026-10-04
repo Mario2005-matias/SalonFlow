@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | Rate limit apertado: 6 pedidos por minuto por IP.
 | Previne brute-force no login e spam no registo.
 */
+
 Route::middleware('throttle:6,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/login',    [AuthController::class, 'login'])->name('auth.login');
@@ -40,9 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reserves',                         [ReserveController::class, 'store'])->name('reserves.store');
     Route::get('/reserves/{reserve}',                [ReserveController::class, 'show'])->name('reserves.show');
     Route::put('/reserves/{reserve}/cancelation',    [ReserveController::class, 'cancelation'])->name('reserves.cancel');
-    });
+});
 
-    /*
+/*
     |--------------------------------------------------------------------------
 | Rotas admin
 |--------------------------------------------------------------------------
@@ -52,23 +53,22 @@ Route::middleware('auth:sanctum')->group(function () {
 | Prefixo /admin para deixar claro na URL que é área restrita.
 */
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-        // Gestão de salas
-        Route::get('/rooms',                 [RoomController::class, 'index'])->name('rooms.index');
-        Route::post('/rooms',                [RoomController::class, 'store'])->name('rooms.store');
-        Route::get('/rooms/{room}',          [RoomController::class, 'show'])->name('rooms.show');
-        Route::put('/rooms/{room}',          [RoomController::class, 'update'])->name('rooms.update');
-        Route::put('/rooms/{room}/disable',  [RoomController::class, 'disable'])->name('rooms.disable');
-        Route::put('/rooms/{room}/enable',   [RoomController::class, 'enable'])->name('rooms.enable');
+    // Gestão de salas
+    Route::get('/rooms',                 [RoomController::class, 'index'])->name('rooms.index');
+    Route::post('/rooms',                [RoomController::class, 'store'])->name('rooms.store');
+    Route::get('/rooms/{room}',          [RoomController::class, 'show'])->name('rooms.show');
+    Route::put('/rooms/{room}',          [RoomController::class, 'update'])->name('rooms.update');
+    Route::put('/rooms/{room}/disable',  [RoomController::class, 'disable'])->name('rooms.disable');
+    Route::put('/rooms/{room}/enable',   [RoomController::class, 'enable'])->name('rooms.enable');
 
-        // Reservas — admin vê/geral todas
-        Route::get('/reserves',                       [ReserveController::class, 'indexAdmin'])->name('reserves.index');
-        Route::post('/reserves',                         [ReserveController::class, 'store'])->name('reserves.store');
-        Route::get('/reserves/{reserve}',             [ReserveController::class, 'show'])->name('reserves.show');
-        Route::put('/reserves/{reserve}/cancelation', [ReserveController::class, 'cancelation'])->name('reserves.cancel');
+    // Reservas — admin vê/geral todas
+    Route::get('/reserves',                       [ReserveController::class, 'indexAdmin'])->name('reserves.index');
+    Route::get('/reserves/{reserve}',             [ReserveController::class, 'show'])->name('reserves.show');
+    Route::put('/reserves/{reserve}/cancelation', [ReserveController::class, 'cancelation'])->name('reserves.cancel');
 
-        // Categorias
-        Route::get('/categories',              [CategoryController::class, 'index'])->name('categories.index');
-        Route::post('/categories',             [CategoryController::class, 'store'])->name('categories.store');
-        Route::put('/categories/{category}',   [CategoryController::class, 'update'])->name('categories.update');
-        Route::delete('/categories/{category}',[CategoryController::class, 'destroy'])->name('categories.destroy');
-    });
+    // Categorias
+    Route::get('/categories',              [CategoryController::class, 'index'])->name('categories.index');
+    Route::post('/categories',             [CategoryController::class, 'store'])->name('categories.store');
+    Route::put('/categories/{category}',   [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+});

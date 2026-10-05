@@ -19,6 +19,13 @@ class Room extends Model
         'is_available'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_available' => 'boolean',
+        ];
+    }
+
     public function reserves()
     {
         return $this->hasMany(Reserve::class);

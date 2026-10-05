@@ -67,7 +67,6 @@ class ReserveController extends Controller
 
     public function store(ReserveStore $request)
     {
-        dd($request->validated());
         $data = $request->validated();
 
         $reservation = DB::transaction(function () use ($request, $data) {

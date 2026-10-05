@@ -23,7 +23,7 @@ class ReserveCancelation extends FormRequest
     public function rules(): array
     {
         return [
-            'reason' => 'required|string|max:255',
+            'reason' => 'nullable|string|max:255',
             'status' => 'required|string|in:cancelated',
         ];
     }

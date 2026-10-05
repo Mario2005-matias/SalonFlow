@@ -4,61 +4,54 @@ namespace App\Policies;
 
 use App\Models\Reserve;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ReservePolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Um user autenticado pode listar reservas (o controller filtra as dele).
+     * O admin também — mas via rota /admin/reserves com indexAdmin.
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Determine whether the user can view the model.
+     * O dono vê a sua reserva. Admin vê qualquer.
      */
     public function view(User $user, Reserve $reserve): bool
     {
-        return $user->id === $reserve->user_id;
+        return $user->id === $reserve->user_id || $user->isAdmin();
     }
 
     /**
-     * Determine whether the user can create models.
+     * Qualquer user autenticado pode criar reservas.
      */
     public function create(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Atualizar/cancelar: dono ou admin.
+     * A regra de "só pending pode ser cancelada" fica no controller,
+     * porque é regra de domínio, não de autorização.
      */
     public function update(User $user, Reserve $reserve): bool
     {
-        return $user->id === $reserve->user->id && $reserve->status === 'pending';
+        return $user->id === $reserve->user_id || $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, Reserve $reserve): bool
     {
-        return false;
+        return $user->id === $reserve->user_id || $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
     public function restore(User $user, Reserve $reserve): bool
     {
         return false;
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
     public function forceDelete(User $user, Reserve $reserve): bool
     {
         return false;
